@@ -61,3 +61,4 @@ examples/.mlcp/
 
 .idea/**
 bin/
+.vagrant/**

@@ -82,8 +82,8 @@ config.vm.define "python" do |py|
     sudo yum update
     sudo yum upgrade
     sudo yum groupinstall -y 'Development Tools'
-    sudo yum install -y python-devel libffi-devel openssl-devel  wget snappy-devel
-    sudo yum -y install python34
+    sudo yum install -y python-devel libffi-devel openssl-devel  wget snappy-devel libxml2-dev libxslt-dev
+    sudo yum -y install python34-devel
     sudo ln -s /usr/bin/python3.4 /usr/bin/python3
     sudo wget https://bootstrap.pypa.io/get-pip.py
     sudo python get-pip.py --force-reinstall # --install-option="--install-scripts=/usr/bin"
