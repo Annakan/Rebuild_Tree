@@ -94,7 +94,7 @@ config.vm.define "python" do |py|
 
    # project specific config
   config.vm.provision "shell", inline: <<-SHELL
-    sudo pip3 install requests
+    sudo pip3 install -r /vagrant/require.txt
   SHELL
 end
 

@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 from lxml import etree
-
+from bs4 import BeautifulSoup,Comment
 
 FILE =r"""data/txt_1574.xml"""
 #FILE =r"""data/txt_0628.xml"""
 
 
-content = etree.parse(FILE)
+XMLcontent = etree.parse(FILE)
 
 
 def scandown(element, level=0):
@@ -21,26 +21,40 @@ def scandown(element, level=0):
             scandown(element, level+1)
 
 
-def builddown(element, level=0, current_division_type=None):
+def sanitize_html_content(element):
+    soup = BeautifulSoup(element.text, 'lxml')
+    for comment in soup.findAll(text=lambda text:isinstance(text, Comment)):
+        comment.extract()
+    for element in soup('style'):
+        element.extract()
+    return soup
+
+
+def builddown(element, level=0, prev_div_type=None):
     for i, element in enumerate(element):
+        indent = "--" * level
+        info = "{} {} {} ".format(indent, i, element.tag)
         if element.tag == "division":
-            if element[1].text != current_division_type:
-                if current_division_type == "ARTICLE":
+            cur_div_type = element[1].text
+            info = "{} **{}**".format(info, cur_div_type)
+            if cur_div_type != prev_div_type:
+                if prev_div_type == "ARTICLE":
                     level -= 1
                 else:
                     level += 1
-            current_division_type = element[1].text
-        indent = "--" * level
-        info = "{} {} {}".format(indent, i, element.tag)
-        if element.tag in ('type',):
-            info = "{} **{}**".format(info, element.text)
+            prev_div_type = cur_div_type
+        if element.tag == "htmlContent":
+            content = sanitize_html_content(element)
+            info += content('body')[0].text[0:50]
+
+
         print(info)
         if len(element):
-            builddown(element, level, current_division_type)
+            builddown(element, level, prev_div_type)
 
 
-#scandown(content.getroot())
-builddown(content.getroot())
+#scandown(XMLcontent.getroot())
+builddown(XMLcontent.getroot())
 
 print('---')
 
